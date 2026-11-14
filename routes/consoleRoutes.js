@@ -1,6 +1,11 @@
 
 const express = require("express");
 const db = require("../database/db");
+const {
+    validateConsole,
+    validateConsoleSearch,
+    validateIdParam
+} = require("../middleware/validation");
 
 const router = express.Router();
 
@@ -9,28 +14,9 @@ function isValidId(id) {
     return Number.isInteger(Number(id)) && Number(id) > 0;
 }
 
-// Validate console details
-function validateConsole(name, platform) {
-    if (typeof name !== "string" || !name.trim()) {
-        return "Console name is required";
-    }
-
-    if (typeof platform !== "string" || !platform.trim()) {
-        return "Console platform is required";
-    }
-
-    return null;
-}
-
 // 1. SEARCH CONSOLES BY PLATFORM
-router.get("/search", (req, res) => {
+router.get("/search", validateConsoleSearch, (req, res) => {
     const { platform } = req.query;
-
-    if (!platform || !platform.trim()) {
-        return res.status(400).json({
-            message: "Please provide a platform to search"
-        });
-    }
 
     const consoles = db.prepare(`
         SELECT * FROM consoles
@@ -39,8 +25,12 @@ router.get("/search", (req, res) => {
     `).all(`%${platform.trim()}%`);
 
     res.status(200).json({
+        success: true,
+        ...(consoles.length === 0 && {
+            message: "No consoles found for the given platform"
+        }),
         count: consoles.length,
-        consoles
+        data: consoles
     });
 });
 
@@ -92,16 +82,8 @@ router.get("/:id", (req, res) => {
 });
 
 // 4. ADD NEW CONSOLE
-router.post("/", (req, res) => {
+router.post("/", validateConsole, (req, res) => {
     const { name, platform } = req.body;
-
-    const validationError = validateConsole(name, platform);
-
-    if (validationError) {
-        return res.status(400).json({
-            message: validationError
-        });
-    }
 
     const result = db.prepare(`
         INSERT INTO consoles (name, platform)
@@ -119,23 +101,9 @@ router.post("/", (req, res) => {
 });
 
 // 5. UPDATE CONSOLE
-router.put("/:id", (req, res) => {
+router.put("/:id", validateIdParam(), validateConsole, (req, res) => {
     const { id } = req.params;
     const { name, platform } = req.body;
-
-    if (!isValidId(id)) {
-        return res.status(400).json({
-            message: "Invalid console ID"
-        });
-    }
-
-    const validationError = validateConsole(name, platform);
-
-    if (validationError) {
-        return res.status(400).json({
-            message: validationError
-        });
-    }
 
     const existingConsole = db.prepare(
         "SELECT * FROM consoles WHERE console_id = ?"
