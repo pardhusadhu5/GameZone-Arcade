@@ -1,0 +1,1437 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "GameZone Arcade Backend API",
+    "description": "Official comprehensive Postman Collection for GameZone Arcade Backend API, covering Server, Gamer Management, Console Management, Booking Management, Assignment Twist Rule verification, and Error Handling with automated test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Server",
+      "item": [
+        {
+          "name": "Home Route",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response returns Running status', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Running');",
+                  "    pm.expect(jsonData.message).to.eql('Welcome to GameZone Arcade');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Check server availability and running status"
+          }
+        },
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Backend is healthy and database is connected', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('healthy');",
+                  "    pm.expect(jsonData.database).to.eql('connected');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check backend and database health status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Gamer Management",
+      "item": [
+        {
+          "name": "Get All Gamers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Gamers array returned with count', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('count');",
+                  "    pm.expect(jsonData.gamers).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Retrieve all registered gamers from the database"
+          }
+        },
+        {
+          "name": "Get Gamer By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Gamer record returned with correct fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('gamer_id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gamers/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers",
+                "1"
+              ]
+            },
+            "description": "Retrieve single gamer details by gamer_id"
+          }
+        },
+        {
+          "name": "Create Gamer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Gamer registered successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Gamer registered successfully');",
+                  "    pm.expect(jsonData.gamer).to.have.property('gamer_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Marcus Phoenix\",\n  \"email\": \"marcus.phoenix@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Register a new gamer with name and unique email"
+          }
+        },
+        {
+          "name": "Update Gamer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Gamer updated successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Gamer updated successfully');",
+                  "    pm.expect(jsonData.gamer.name).to.eql('Marcus Fenix');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Marcus Fenix\",\n  \"email\": \"marcus.fenix@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers",
+                "2"
+              ]
+            },
+            "description": "Update an existing gamer's name and email"
+          }
+        },
+        {
+          "name": "Delete Gamer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Gamer deleted successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Gamer deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gamers/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers",
+                "6"
+              ]
+            },
+            "description": "Delete an unbooked test gamer record by ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Console Management",
+      "item": [
+        {
+          "name": "Get All Consoles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Consoles array returned with count', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('count');",
+                  "    pm.expect(jsonData.consoles).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles"
+              ]
+            },
+            "description": "Retrieve all consoles in the arcade"
+          }
+        },
+        {
+          "name": "Get Console By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Console details returned', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('console_id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('platform');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles",
+                "1"
+              ]
+            },
+            "description": "Retrieve a specific console by console_id"
+          }
+        },
+        {
+          "name": "Search Consoles By Platform",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Matching search results returned', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.consoles).to.be.an('array');",
+                  "    pm.expect(jsonData.count).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles/search?platform=play",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "platform",
+                  "value": "play"
+                }
+              ]
+            },
+            "description": "Search consoles matching partial platform name"
+          }
+        },
+        {
+          "name": "Filter Consoles By Platform",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Filtered consoles match exact platform', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.consoles.every(c => c.platform.toLowerCase() === 'xbox')).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles?platform=Xbox",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles"
+              ],
+              "query": [
+                {
+                  "key": "platform",
+                  "value": "Xbox"
+                }
+              ]
+            },
+            "description": "Filter consoles by exact platform name"
+          }
+        },
+        {
+          "name": "Create Console",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Console created successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Console added successfully');",
+                  "    pm.expect(jsonData.console).to.have.property('console_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nintendo Switch OLED Station\",\n  \"platform\": \"Nintendo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/consoles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles"
+              ]
+            },
+            "description": "Add a new gaming console to the arcade"
+          }
+        },
+        {
+          "name": "Update Console",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Console updated successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Console updated successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nintendo Switch Pro Station\",\n  \"platform\": \"Nintendo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/consoles/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles",
+                "2"
+              ]
+            },
+            "description": "Update console name and platform"
+          }
+        },
+        {
+          "name": "Delete Console",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Console deleted successfully', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Console deleted successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles",
+                "3"
+              ]
+            },
+            "description": "Delete an unbooked test console by ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Booking Management",
+      "item": [
+        {
+          "name": "Get All Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Bookings array returned with count', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('count');",
+                  "    pm.expect(jsonData.bookings).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "Retrieve all arcade bookings"
+          }
+        },
+        {
+          "name": "Get Booking Details using JOIN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Details return joined gamer and console fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.bookings[0]).to.have.property('gamer_name');",
+                  "    pm.expect(jsonData.bookings[0]).to.have.property('console_name');",
+                  "    pm.expect(jsonData.bookings[0]).to.have.property('platform');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/details",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "details"
+              ]
+            },
+            "description": "Retrieve complete booking details with relational JOIN data"
+          }
+        },
+        {
+          "name": "Get Booking By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Booking record returned for booking_id 1', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.booking.booking_id).to.eql(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "1"
+              ]
+            },
+            "description": "Retrieve a specific booking by booking_id"
+          }
+        },
+        {
+          "name": "Filter Bookings By Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Filtered bookings have status pending', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.bookings.every(b => b.status === 'pending')).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?status=pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            },
+            "description": "Filter bookings by status parameter"
+          }
+        },
+        {
+          "name": "Create Booking (Automatically Pending)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('New booking defaults to pending status', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Booking created successfully');",
+                  "    pm.expect(jsonData.booking.status).to.eql('pending');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gamer_id\": 1,\n  \"console_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "Create a new booking starting with default pending status"
+          }
+        },
+        {
+          "name": "Update Booking Status - Pending to Approved",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Status transition to approved succeeds', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.booking.status).to.eql('approved');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/3/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "3",
+                "status"
+              ]
+            },
+            "description": "Update booking status from pending to approved"
+          }
+        },
+        {
+          "name": "Update Booking Status - Approved to Done",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Status transition to done succeeds', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.booking.status).to.eql('done');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"done\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/2/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "2",
+                "status"
+              ]
+            },
+            "description": "Update booking status from approved to done"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Error Testing",
+      "item": [
+        {
+          "name": "Unknown API Route",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Route not found message returned', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.message).to.include('Route not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/unknown-route",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "unknown-route"
+              ]
+            },
+            "description": "Expect 404 for nonexistent endpoint"
+          }
+        },
+        {
+          "name": "Invalid Gamer ID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid gamer ID message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Invalid gamer ID');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gamers/invalid_id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers",
+                "invalid_id"
+              ]
+            },
+            "description": "Expect 400 for non-numeric gamer ID"
+          }
+        },
+        {
+          "name": "Nonexistent Gamer ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Gamer not found message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Gamer not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gamers/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers",
+                "999999"
+              ]
+            },
+            "description": "Expect 404 for valid integer ID that does not exist"
+          }
+        },
+        {
+          "name": "Missing Gamer Required Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Validation message for missing name', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Gamer name is required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"missingname@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Expect 400 when name is omitted"
+          }
+        },
+        {
+          "name": "Invalid Gamer Email Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Validation message for invalid email', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('A valid email is required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bad Email Gamer\",\n  \"email\": \"not-an-email\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Expect 400 when email format is invalid"
+          }
+        },
+        {
+          "name": "Duplicate Gamer Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 409', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test('Email already registered message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Email already registered');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alex Replica\",\n  \"email\": \"alex@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Expect 409 when email already exists"
+          }
+        },
+        {
+          "name": "Nonexistent Console ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Console not found message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Console not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consoles/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles",
+                "999999"
+              ]
+            },
+            "description": "Expect 404 for nonexistent console ID"
+          }
+        },
+        {
+          "name": "Missing Console Platform Field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Platform required message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Console platform is required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Platformless Station\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/consoles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consoles"
+              ]
+            },
+            "description": "Expect 400 when console platform is omitted"
+          }
+        },
+        {
+          "name": "Booking with Nonexistent Gamer ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Gamer not found error', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Gamer not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gamer_id\": 999999,\n  \"console_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "Expect 404 foreign key rejection when gamer does not exist"
+          }
+        },
+        {
+          "name": "Booking with Nonexistent Console ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Console not found error', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Console not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gamer_id\": 1,\n  \"console_id\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ]
+            },
+            "description": "Expect 404 foreign key rejection when console does not exist"
+          }
+        },
+        {
+          "name": "Invalid Booking Status Filter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid booking status error', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Invalid booking status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings?status=unknown",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "unknown"
+                }
+              ]
+            },
+            "description": "Expect 400 when invalid status filter is passed"
+          }
+        },
+        {
+          "name": "Twist Rule - Reject Transition Pending to Done",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid status change error', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Invalid status change');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"done\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/3/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "3",
+                "status"
+              ]
+            },
+            "description": "Twist Rule: pending cannot jump directly to done"
+          }
+        },
+        {
+          "name": "Twist Rule - Reject Transition Done to Approved",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid status change error', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql('Invalid status change');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Twist Rule: done booking cannot be moved backwards to approved"
+          }
+        },
+        {
+          "name": "Malformed JSON Request Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Invalid JSON request body message', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('Invalid JSON request body');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Broken JSON\"\n"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gamers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gamers"
+              ]
+            },
+            "description": "Expect 400 error handler response when JSON is malformed"
+          }
+        }
+      ]
+    }
+  ]
+}
