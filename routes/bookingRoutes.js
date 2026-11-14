@@ -1,6 +1,11 @@
 
 const express = require("express");
 const db = require("../database/db");
+const {
+    validateBooking,
+    validateBookingStatus,
+    validateIdParam
+} = require("../middleware/validation");
 
 const router = express.Router();
 
@@ -25,14 +30,8 @@ const bookingJoinQuery = `
 `;
 
 // 1. CREATE BOOKING
-router.post("/", (req, res) => {
+router.post("/", validateBooking, (req, res) => {
     const { gamer_id, console_id } = req.body;
-
-    if (!isValidId(gamer_id) || !isValidId(console_id)) {
-        return res.status(400).json({
-            error: "Valid gamer_id and console_id are required"
-        });
-    }
 
     try {
         const gamer = db.prepare(
@@ -179,15 +178,9 @@ router.get("/:id", (req, res) => {
 });
 
 // 5. UPDATE BOOKING STATUS
-router.patch("/:id/status", (req, res) => {
+router.patch("/:id/status", validateIdParam(), validateBookingStatus, (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-
-    if (!isValidId(id)) {
-        return res.status(400).json({
-            error: "Invalid booking ID"
-        });
-    }
 
     try {
         const booking = db.prepare(

@@ -1,6 +1,7 @@
 
 const express = require("express");
 const db = require("../database/db");
+const { validateGamer, validateIdParam } = require("../middleware/validation");
 
 const router = express.Router();
 
@@ -45,23 +46,8 @@ router.get("/:id", (req, res) => {
 });
 
 // 3. CREATE GAMER
-router.post("/", (req, res) => {
+router.post("/", validateGamer, (req, res) => {
     const { name, email } = req.body;
-
-    if (typeof name !== "string" || !name.trim()) {
-        return res.status(400).json({
-            message: "Gamer name is required"
-        });
-    }
-
-    if (
-        typeof email !== "string" ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-    ) {
-        return res.status(400).json({
-            message: "A valid email is required"
-        });
-    }
 
     try {
         const result = db.prepare(`
@@ -92,30 +78,9 @@ router.post("/", (req, res) => {
 });
 
 // 4. UPDATE GAMER
-router.put("/:id", (req, res) => {
+router.put("/:id", validateIdParam(), validateGamer, (req, res) => {
     const { id } = req.params;
     const { name, email } = req.body;
-
-    if (!isValidId(id)) {
-        return res.status(400).json({
-            message: "Invalid gamer ID"
-        });
-    }
-
-    if (typeof name !== "string" || !name.trim()) {
-        return res.status(400).json({
-            message: "Gamer name is required"
-        });
-    }
-
-    if (
-        typeof email !== "string" ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-    ) {
-        return res.status(400).json({
-            message: "A valid email is required"
-        });
-    }
 
     const existingGamer = db.prepare(
         "SELECT * FROM gamers WHERE gamer_id = ?"
