@@ -7,10 +7,38 @@
 **API Testing:** Postman
 **Version Control:** Git and GitHub
 
-## Group Details
+## Project Metadata
 
 | Field | Details |
 |---|---|
+| **Group Number** | LG-01 |
+| **Project Name** | GameZone Arcade Backend |
+| **Team Size** | 6 Members |
+| **Project Type** | Group Project / Course Assignment |
+| **Domain** | Backend Web Development & REST APIs |
+| **Course** | Backend Development Fundamentals |
+| **Study Level** | Undergraduate (UG) |
+| **Year & Term** | II Year & II Term |
+| **Class & Section** | AIDE - 2B & 313 |
+| **Faculty** | Yugandhar Gurjalwar |
+| **Technologies** | Node.js, Express.js, SQLite, better-sqlite3 |
+| **Testing Tool** | Postman |
+| **Version Control** | Git & GitHub |
+| **Submission Date** | 15-11-2026 |
+| **Demo Date** | 16-11-2026 |
+
+## Team Members and Contributions
+
+| S.No. | Team Member Name | Registration Number | Assigned Role | Responsibilities |
+|:---:|---|:---:|---|---|
+| 1 | **N. Sri Vardhan** | 252U1R5110 | Express Server and Routes | Setup Express app, configure routing architecture, implement middleware, and handle server-level error responses. |
+| 2 | **R. Praisy** | 252U1R5127 | Database Management | Design relational schema, establish foreign key constraints, manage SQLite connections via `better-sqlite3`, and seed initial data. |
+| 3 | **M. Manoj** | 252U1R5106 | REST API Development | Implement full CRUD operations for Gamers and Consoles, develop booking query endpoints, and execute SQL JOIN queries. |
+| 4 | **P. Mahitha** | 252U1R5121 | Validation and Search | Implement request payload validation, email format/uniqueness checks, console platform search, and status filtering. |
+| 5 | **R. Joel** | 252U1R5125 | Booking Workflow and Twist Rule | Implement booking creation, manage booking lifecycle states, and enforce the strict Twist Rule state-machine transitions. |
+| 6 | **S. Pardhu Naidu** | 252U1R5128 | Postman Testing and Documentation (Lead) | Design automated Postman test suite (`pm.test`), verify all 35 test cases, author API documentation and testing reports, and oversee final GitHub submission. |
+
+---|---|
 | Group Number | LG-01 |
 | Project Name | GameZone Arcade |
 | Team Size | 6 Members |
