@@ -1,43 +1,45 @@
+
 const db = require("./db");
 
-try {
-    db.transaction(() => {
-        const insertGamer = db.prepare(`
-            INSERT INTO gamers (name, email)
-            VALUES (?, ?)
-            ON CONFLICT(email) DO NOTHING
-        `);
+// Insert sample gamers
+const insertGamer = db.prepare(`
+    INSERT OR IGNORE INTO gamers (name, email)
+    VALUES (?, ?)
+`);
 
-        insertGamer.run("Alex", "alex@example.com");
-        insertGamer.run("Sam", "sam@example.com");
+insertGamer.run("Alex", "alex@example.com");
+insertGamer.run("Sam", "sam@example.com");
 
-        const insertConsole = db.prepare(`
-            INSERT INTO consoles (name, platform)
-            SELECT ?, ?
-            WHERE NOT EXISTS (
-                SELECT 1 FROM consoles WHERE name = ?
-            )
-        `);
+// Insert sample consoles
+const insertConsole = db.prepare(`
+    INSERT INTO consoles (name, platform)
+    SELECT ?, ?
+    WHERE NOT EXISTS (
+        SELECT 1 FROM consoles WHERE name = ?
+    )
+`);
 
-        insertConsole.run("PS5 Station 1", "PlayStation", "PS5 Station 1");
-        insertConsole.run("Xbox Station 1", "Xbox", "Xbox Station 1");
+insertConsole.run("PS5 Station 1", "PlayStation", "PS5 Station 1");
+insertConsole.run("Xbox Station 1", "Xbox", "Xbox Station 1");
 
-        db.prepare(`
-            INSERT INTO bookings (gamer_id, console_id)
-            SELECT gamers.gamer_id, consoles.console_id
-            FROM gamers
-            JOIN consoles ON consoles.name = ?
-            WHERE gamers.email = ?
-            AND NOT EXISTS (
-                SELECT 1
-                FROM bookings
-                WHERE bookings.gamer_id = gamers.gamer_id
-                    AND bookings.console_id = consoles.console_id
-            )
-        `).run("PS5 Station 1", "alex@example.com");
-    })();
+// Insert sample bookings only if there are no bookings
+const bookingCount = db.prepare(
+    "SELECT COUNT(*) AS total FROM bookings"
+).get();
 
-    console.log("Sample data inserted successfully!");
-} finally {
-    db.close();
+if (bookingCount.total === 0) {
+    const gamer = db.prepare(
+        "SELECT gamer_id FROM gamers WHERE email = ?"
+    ).get("alex@example.com");
+
+    const console = db.prepare(
+        "SELECT console_id FROM consoles WHERE name = ?"
+    ).get("PS5 Station 1");
+
+    db.prepare(`
+        INSERT INTO bookings (gamer_id, console_id)
+        VALUES (?, ?)
+    `).run(gamer.gamer_id, console.console_id);
 }
+
+console.log("Sample data inserted successfully!");
