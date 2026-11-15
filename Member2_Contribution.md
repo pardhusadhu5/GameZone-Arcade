@@ -1,74 +1,122 @@
-# Member 2 Contribution Report
+# Member 2 - Database Design and Implementation Contribution Report
 
-## 1. Member Information
+**Project:** GameZone Arcade Backend (LG-01)
 
-| Field | Details |
+**Team Member:** R. Praisy
+
+**Registration Number:** 252U1R5127
+
+**Assigned Responsibility:** MEMBER 2 - DATABASE DESIGN, SQLITE CONNECTION, SCHEMA, AND SEED DATA
+
+**Submission Date:** 15-11-2026
+
+**Repository:** [https://github.com/pardhusadhu5/GameZone-Arcade](https://github.com/pardhusadhu5/GameZone-Arcade)
+
+---
+
+## 1. Member Role & Overview
+
+As **Member 2**, my responsibility was to create the SQLite database foundation used by the GameZone Arcade backend. My work covers:
+
+1. Establishing the database connection using `better-sqlite3`.
+2. Creating the gamers, consoles, and bookings tables.
+3. Defining primary keys, foreign keys, and data constraints.
+4. Preparing repeatable sample data for development and verification.
+5. Making the shared database connection available to the backend controllers.
+
+---
+
+## 2. Database Files and Architecture
+
+| File | Responsibility |
 |---|---|
-| Team Member | Member 2 - R. Praisy |
-| Registration Number | 252U1R5127 |
-| Role | Database Design and Implementation |
-| Project | GameZone Arcade Backend |
+| `database/db.js` | Opens `database/gamezone.db`, enables foreign-key enforcement, applies the schema, and exports the shared connection. |
+| `database/schema.sql` | Defines the gamers, consoles, and bookings tables and their constraints. |
+| `database/seed.js` | Adds sample gamers, consoles, and an initial booking without repeatedly adding the same sample records. |
 
-## 2. Project Responsibility
+The database package is `better-sqlite3`. The database file is stored in the project's `database` folder.
 
-My responsibility was to set up the SQLite database used by the GameZone Arcade backend. This work included creating the database connection with `better-sqlite3`, designing the database schema, creating tables, and preparing seed data for initial use.
+---
 
-## 3. Database Connection
+## 3. SQLite Connection and Query Execution
 
-The `database/db.js` file opens the SQLite database at `database/gamezone.db` and exports the connection for the backend to use. It enables foreign key enforcement, reads and applies `schema.sql` during initialization, and uses a transaction while applying the schema. It also checks for an older `gamers` table definition and, when needed, migrates it so the email column is required while preserving existing gamer IDs.
+`database/db.js` creates the database connection with `better-sqlite3`. It enables SQLite foreign-key enforcement, reads `schema.sql`, and runs the SQL with `db.exec()`. The connection is then exported for the server and controllers to reuse.
 
-The backend runs SQL through `better-sqlite3` prepared statements. The controllers use methods such as `.get()` to retrieve one record, `.all()` to retrieve multiple records, and `.run()` to insert, update, or delete records.
+Controllers execute SQL through prepared statements. The backend uses `.get()` to read one record, `.all()` to read multiple records, and `.run()` to insert, update, or delete records. Parameter placeholders (`?`) are used to supply query values.
 
-## 4. Database Schema
+---
 
-The schema in `database/schema.sql` creates three tables:
+## 4. Database Schema and Relationships
 
-| Table | Columns and data types | Purpose |
+The schema defines three related tables:
+
+| Table | Columns and data types | Purpose and constraints |
 |---|---|---|
-| `gamers` | `gamer_id INTEGER`, `name TEXT`, `email TEXT` | Stores gamer details. `gamer_id` is an auto-incrementing primary key; `name` and `email` are required, and `email` is unique. |
-| `consoles` | `console_id INTEGER`, `name TEXT`, `platform TEXT` | Stores console details. `console_id` is an auto-incrementing primary key; `name` and `platform` are required. |
-| `bookings` | `booking_id INTEGER`, `gamer_id INTEGER`, `console_id INTEGER`, `status TEXT` | Connects a gamer to a console. `booking_id` is an auto-incrementing primary key; both reference IDs are required. `status` is required, defaults to `pending`, and is limited to `pending`, `approved`, or `done`. |
+| `gamers` | `gamer_id INTEGER`, `name TEXT`, `email TEXT` | Stores gamer information. `gamer_id` is an auto-incrementing primary key; `name` is required, and `email` has a unique constraint. |
+| `consoles` | `console_id INTEGER`, `name TEXT`, `platform TEXT` | Stores console stations. `console_id` is an auto-incrementing primary key; `name` and `platform` are required. |
+| `bookings` | `booking_id INTEGER`, `gamer_id INTEGER`, `console_id INTEGER`, `status TEXT` | Connects a gamer to a console. `booking_id` is an auto-incrementing primary key; the two reference IDs are required. `status` defaults to `pending` and is limited to `pending`, `approved`, or `done`. |
 
-The `bookings.gamer_id` column references `gamers.gamer_id`, and `bookings.console_id` references `consoles.console_id`. This creates a one-to-many relationship from gamers to bookings and from consoles to bookings: each booking has one gamer and one console, while each gamer or console can be related to multiple bookings.
+Each booking references one gamer and one console through foreign keys:
 
-## 5. Seed Data
+- `bookings.gamer_id` references `gamers.gamer_id`.
+- `bookings.console_id` references `consoles.console_id`.
 
-The `database/seed.js` file inserts example gamers, consoles, and a booking so the application can be tried with initial records. It uses prepared statements and wraps the inserts in a transaction. The seed script can be run with `npm run seed`.
+These references create one-to-many relationships: a gamer or console can be associated with multiple bookings. The foreign keys prevent a booking from referring to a gamer or console that does not exist.
 
-The seed operations are designed for safe repeated execution: existing gamers are skipped by email, consoles are checked by name before insertion, and a booking is inserted only when the same gamer-console pair is not already present.
+---
 
-## 6. Database Relationships
+## 5. Seed Data and Repeatable Execution
 
-Bookings connect gamers and consoles through their foreign key columns. The database connection enables SQLite foreign key enforcement, and the schema requires both referenced records to exist. The default foreign key behavior prevents deleting a gamer or console while bookings still refer to it.
+The `database/seed.js` script adds two example gamers (Alex and Sam), two console stations (PS5 Station 1 and Xbox Station 1), and an example booking for Alex on the PS5 station when the bookings table is empty. It can be run with `npm run seed`.
 
-The backend also uses SQL `JOIN` queries to show related data. For example, booking queries join `bookings` with `gamers` and `consoles` to return gamer and console names alongside booking status.
+The script avoids adding the same sample records on repeated runs:
 
-## 7. Integration
+- Gamer inserts use `INSERT OR IGNORE`, with the unique email constraint identifying existing sample gamers.
+- Console inserts first check whether a console with the same name already exists.
+- The sample booking is inserted only when there are no bookings in the table.
 
-The Express server imports the database connection during startup. The gamer, console, and booking controllers also import the shared connection from `database/db.js` and use it to execute their SQL queries. This allows API handlers to access the same SQLite database for gamer, console, and booking operations.
+---
 
-My contribution provides the database foundation used by those controllers and APIs; it does not include implementing their API behavior.
+## 6. Backend Integration and Database Queries
 
-## 8. Testing and Verification
+The Express server imports `database/db.js` during startup. Gamer, console, and booking controllers use the exported connection to run their database queries. This allows API requests to read and update the shared SQLite database.
 
-I verified the schema and database implementation against `database/schema.sql`, `database/db.js`, and `database/seed.js`. I also inspected the existing SQLite file using read-only checks:
+Booking query endpoints use SQL `JOIN` operations to combine booking records with gamer and console information. This allows responses to include related details such as gamer name, console name, platform, and booking status. API behavior and booking workflow rules are implemented by the corresponding team members.
 
-- The database contains the `gamers`, `consoles`, and `bookings` tables.
+---
+
+## 7. Testing and Verification
+
+The database source files and the existing SQLite database were checked using read-only inspection:
+
+- Confirmed the `gamers`, `consoles`, and `bookings` tables and their primary-key and foreign-key definitions.
 - The inspected database contained 5 gamers, 2 consoles, and 3 bookings.
 - SQLite `integrity_check` returned `ok`.
 - SQLite `foreign_key_check` returned no violations.
-- The schema source contains the expected primary keys, foreign keys, required fields, unique gamer email, and booking status constraint.
+- Confirmed the booking status default and allowed-value constraint in `schema.sql`.
 
-These checks verified the database structure and integrity. No separate API or Postman test was performed as part of this database verification.
+These checks covered database structure and integrity. No separate API or Postman test was performed as part of this database verification.
 
-## 9. Challenges Faced
+---
 
-One important consideration was maintaining referential integrity between bookings, gamers, and consoles. The database connection enables foreign key checks, and the schema defines the references explicitly. The connection code also accounts for an earlier `gamers` table definition in which email might not yet be required, and checks for foreign key violations during that migration.
+## 8. Challenges Faced and Solutions
 
-## 10. Learning Outcomes
+Maintaining valid links between bookings, gamers, and consoles was an important database-design consideration. I addressed it by defining foreign keys in the schema and enabling SQLite foreign-key enforcement in the shared connection.
 
-This work helped me learn how to create a relational database with SQLite, choose suitable columns and data types, and define primary and foreign keys. I also learned how constraints help protect data, how transactions and prepared statements are used with `better-sqlite3`, how seed scripts can be made repeatable, and how a shared database connection supports backend controllers and API requests.
+Another consideration was making the sample data script safe to rerun. The seed script uses the unique gamer email, checks console names, and inserts the sample booking only when the bookings table is empty.
 
-## 11. Conclusion
+---
 
-I contributed the SQLite database setup for the GameZone Arcade backend, including its connection, schema, relationships, and repeatable sample-data script. This database supports the backend's gamer, console, and booking records and provides the foundation for the team's API integration.
+## 9. Key Learning Outcomes
+
+- Learned to design relational tables and choose SQLite data types and constraints.
+- Improved my understanding of primary keys, foreign keys, and one-to-many relationships.
+- Practiced using `better-sqlite3` prepared statements and SQL `JOIN` queries.
+- Learned how a shared database connection integrates with backend controllers and APIs.
+- Understood how conditional seed inserts help avoid duplicate sample records.
+
+---
+
+## 10. Individual Contribution Summary
+
+I contributed the SQLite connection, database schema, table relationships, and seed-data setup for the GameZone Arcade backend. This work provides the data layer used by the team's gamer, console, and booking APIs.
