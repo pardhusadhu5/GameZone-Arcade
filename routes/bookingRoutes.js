@@ -1,11 +1,11 @@
-
-const express = require("express");
+﻿const express = require("express");
 const db = require("../database/db");
 const {
     validateBooking,
     validateBookingStatus,
     validateIdParam
 } = require("../middleware/validation");
+const bookingQueryRoutes = require("./bookingQueryRoutes");
 
 const router = express.Router();
 
@@ -78,106 +78,10 @@ router.post("/", validateBooking, (req, res) => {
     }
 });
 
-// 2. GET ALL BOOKINGS / FILTER BY STATUS
-router.get("/", (req, res) => {
-    const { status } = req.query;
+// Mount Member 3 booking query routes (GET /, GET /details, GET /:id)
+router.use(bookingQueryRoutes);
 
-    const validStatuses = ["pending", "approved", "done"];
-
-    if (status && !validStatuses.includes(status)) {
-        return res.status(400).json({
-            error: "Invalid booking status"
-        });
-    }
-
-    let sql = bookingJoinQuery;
-    const params = [];
-
-    if (status) {
-        sql += " WHERE b.status = ?";
-        params.push(status);
-    }
-
-    sql += " ORDER BY b.booking_id DESC";
-
-    try {
-        const bookings = db.prepare(sql).all(...params);
-
-        return res.status(200).json({
-            count: bookings.length,
-            bookings
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            error: "Could not retrieve bookings"
-        });
-    }
-});
-
-// 3. GET BOOKING DETAILS USING JOIN
-// Keep this before /:id
-router.get("/details", (req, res) => {
-    try {
-        const bookings = db.prepare(`
-            ${bookingJoinQuery}
-            ORDER BY b.booking_id DESC
-        `).all();
-
-        return res.status(200).json({
-            message: "Booking details retrieved successfully",
-            count: bookings.length,
-            bookings
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            error: "Could not retrieve booking details"
-        });
-    }
-});
-
-// 4. GET ONE BOOKING BY ID
-router.get("/:id", (req, res) => {
-    const { id } = req.params;
-
-    if (!isValidId(id)) {
-        return res.status(400).json({
-            error: "Invalid booking ID"
-        });
-    }
-
-    try {
-        const booking = db.prepare(`
-            ${bookingJoinQuery}
-            WHERE b.booking_id = ?
-        `).get(Number(id));
-
-        if (!booking) {
-            return res.status(404).json({
-                error: "Booking not found"
-            });
-        }
-
-        return res.status(200).json({
-            message: "Booking retrieved successfully",
-            booking
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            error: "Could not retrieve booking"
-        });
-    }
-});
-
-// 5. UPDATE BOOKING STATUS
+// 2. UPDATE BOOKING STATUS
 router.patch("/:id/status", validateIdParam(), validateBookingStatus, (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
