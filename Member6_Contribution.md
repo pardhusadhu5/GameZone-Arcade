@@ -229,7 +229,7 @@ My documentation contributions delivered clear, comprehensive, and professional 
    - Authored an exhaustive technical reference covering all 20 API endpoints, request bodies, query parameters, success payloads, and error responses.
 3. **`documentation/Testing_Report.md`:**
    - Compiled an empirical testing report featuring a standardized 35-row verification matrix (`Test ID | Module | Test Case | Expected Result | Actual Result | Status`).
-4. **`documentation/Member6_Contribution.md` & `CONTRIBUTION.md`:**
+4. **`Member6_Contribution.md`:**
    - Authored individual contribution reports strictly reflecting Member 6 responsibilities.
 5. **Screenshot Evidence Organization:**
    - Curated 24 high-resolution Postman execution screenshots organized into dedicated subdirectories:
@@ -284,6 +284,6 @@ My documentation contributions delivered clear, comprehensive, and professional 
 | **Tests Untested** | **0** |
 | **Twist Rule Verification** | **Verified & Enforced** (All 5 state rules validated) |
 | **Visual Evidence Screenshots** | **24 screenshots** organized across 5 folders |
-| **Documentation Files Authored** | `CONTRIBUTION.md`, `README.md`, `API_Documentation.md`, `Testing_Report.md`, `Member6_Contribution.md` |
+| **Documentation Files Authored** | `Member6_Contribution.md`, `README.md`, `API_Documentation.md`, `Testing_Report.md` |
 | **Peer Source Code Modified** | **None** (Preserved all source work from Members 1–5) |
 | **Git Status** | Fully committed, synchronized, and verified on `main` branch |
