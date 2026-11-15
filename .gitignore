@@ -1,3 +1,7 @@
 node_modules/
 database/*.db
 database/*.db-*
+
+# Local Postman desktop cache
+/.postman/
+/postman/

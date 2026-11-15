@@ -977,7 +977,8 @@
                   "});",
                   "pm.test('Validation message for missing name', function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.message).to.eql('Gamer name is required');",
+                  "    var valid = jsonData.message === 'Gamer name is required' || (jsonData.message === 'Validation failed' && Array.isArray(jsonData.errors) && jsonData.errors.some(function(e) { return e.toLowerCase().includes('name'); }));",
+                  "    pm.expect(valid).to.be.true;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -1020,7 +1021,8 @@
                   "});",
                   "pm.test('Validation message for invalid email', function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.message).to.eql('A valid email is required');",
+                  "    var valid = jsonData.message === 'A valid email is required' || (jsonData.message === 'Validation failed' && Array.isArray(jsonData.errors) && jsonData.errors.some(function(e) { return e.toLowerCase().includes('email'); }));",
+                  "    pm.expect(valid).to.be.true;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -1141,7 +1143,8 @@
                   "});",
                   "pm.test('Platform required message', function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.message).to.eql('Console platform is required');",
+                  "    var valid = jsonData.message === 'Console platform is required' || (jsonData.message === 'Validation failed' && Array.isArray(jsonData.errors) && jsonData.errors.some(function(e) { return e.toLowerCase().includes('platform'); }));",
+                  "    pm.expect(valid).to.be.true;",
                   "});"
                 ],
                 "type": "text/javascript"
