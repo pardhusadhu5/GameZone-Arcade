@@ -75,8 +75,7 @@ Allows clients to create a reservation connecting a registered gamer with an ava
 
 ## 4. The Twist Rule Implementation
 
-### 4.1 Explanation of the Twist Rule in Simple Terms
-> **How to explain the Twist Rule in your demo:**
+### 4.1 Explanation of the Twist Rule:
 > 
 > *"In a real gaming arcade, a gamer cannot simply walk in and declare their booking 'completed' (done), nor can a staff member approve a booking that was already finished. A booking must follow an exact chronological life cycle:*
 > 1. *When a gamer books a console, it starts as **pending** awaiting staff approval.*
